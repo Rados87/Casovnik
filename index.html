@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analog Clock Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="analog-clock" width="500" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('analog-clock');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const clockRadius = 187.5; // Povećanje veličine sata za 25%
+
+        function drawHand(rotation, length, color) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 5;
+            ctx.moveTo(centerX, centerY);
+            const angle = (rotation - 90) * (Math.PI / 180);
+            const endX = centerX + length * Math.cos(angle);
+            const endY = centerY + length * Math.sin(angle);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawNumbers() {
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i - 3) * (Math.PI / 6);
+                const x = centerX + (clockRadius - 30) * Math.cos(angle);
+                const y = centerY + (clockRadius - 30) * Math.sin(angle);
+                ctx.fillText(i, x, y);
+            }
+        }
+
+        function drawClock() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 8;
+            ctx.arc(centerX, centerY, clockRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+
+            drawNumbers();
+
+            const hoursRotation = (hours % 12 + minutes / 60) * 30;
+            const minutesRotation = (minutes + seconds / 60) * 6;
+            const secondsRotation = seconds * 6;
+            drawHand(hoursRotation, clockRadius * 0.5, "black");
+            drawHand(minutesRotation, clockRadius * 0.8, "black");
+            drawHand(secondsRotation, clockRadius * 0.9, "black");
+
+            requestAnimationFrame(drawClock);
+        }
+
+        drawClock();
+    </script>
+</body>
+</html>
